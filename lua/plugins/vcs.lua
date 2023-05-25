@@ -8,7 +8,6 @@ return {
 	-- show svn line status
 	{
 		"mhinz/vim-signify",
-		event = "VeryLazy",
 		config = function()
 			vim.cmd [[
 				let g:signify_skip = { 'vcs': { 'allow': ['svn'] } }
