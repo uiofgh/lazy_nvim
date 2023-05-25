@@ -2,7 +2,8 @@ local Util = require "lazy.core.util"
 
 local M = {}
 
-M.root_patterns = { ".vimrc.lua", ".git", ".local.vimrc", ".git/", "lua" }
+M.root_patterns = { ".vimrc.lua", ".git", ".local.vimrc", ".git/" }
+M.lsp_root_patterns = { ".vimrc.lua", ".git", ".local.vimrc", ".git/", "lua" }
 M.CUSTOM_LSP = {
 	XY3_LUA = "luahelper-xy3",
 }

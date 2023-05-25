@@ -88,26 +88,6 @@ return {
 				-- end,
 				-- Specify * to use this function as a fallback for any server
 				-- ["*"] = function(server, opts) end,
-				["lua_ls"] = function(_, opts)
-					local conf = require("lspconfig")["lua_ls"]
-					conf.setup(opts)
-					local try_add = conf.manager.try_add
-					conf.manager.try_add = function(bufnr)
-						local path = vim.api.nvim_buf_get_name(bufnr)
-						if not Util.is_nvim_lua(path) then return end
-						try_add(bufnr)
-					end
-				end,
-				[Util.CUSTOM_LSP.XY3_LUA] = function(_, opts)
-					local conf = require("lspconfig")[Util.CUSTOM_LSP.XY3_LUA]
-					conf.setup { opts }
-					local try_add = conf.manager.try_add
-					conf.manager.try_add = function(bufnr)
-						local path = vim.api.nvim_buf_get_name(bufnr)
-						if Util.is_nvim_lua(path) then return end
-						try_add(bufnr)
-					end
-				end,
 			},
 		},
 		---@param opts PluginLspOpts
@@ -197,7 +177,7 @@ return {
 					default_config = {
 						cmd = { Util.is_win() and "luahelper-lsp.cmd" or "luahelper-lsp", "--mode=1" },
 						filetypes = { "lua", "pto", "tbl" },
-						root_dir = require("lspconfig").util.root_pattern "luahelper.json",
+						root_dir = require("lspconfig").util.root_pattern(Util.lsp_root_patterns),
 						init_options = {
 							PluginPath = require("mason-core.path").concat {
 								require("mason-core.path").package_prefix(Util.CUSTOM_LSP.XY3_LUA),
@@ -260,6 +240,10 @@ return {
 				Util.lsp_disable("tsserver", is_deno)
 				Util.lsp_disable("denols", function(root_dir) return not is_deno(root_dir) end)
 			end
+			if servers[Util.CUSTOM_LSP.XY3_LUA] then
+				Util.lsp_disable("lua_ls", function(root_dir, _) return not Util.is_nvim_lua(root_dir) end)
+				Util.lsp_disable(Util.CUSTOM_LSP.XY3_LUA, function(root_dir, _) return Util.is_nvim_lua(root_dir) end)
+			end
 		end,
 	},
 
@@ -287,7 +271,6 @@ return {
 
 	-- cmdline tools and lsp servers
 	{
-
 		"williamboman/mason.nvim",
 		cmd = "Mason",
 		keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
@@ -297,7 +280,24 @@ return {
 				"github:mason-org/mason-registry",
 				"lua:plugins.lsp.mason.index",
 			},
-			ensure_installed = {},
+			ensure_installed = {
+				"clang-format",
+				"cmake-language-server",
+				"go-debug-adapter",
+				"gofumpt",
+				"gopls",
+				"js-debug-adapter",
+				"pyright",
+				"prettier",
+				"rust-analyzer",
+				"rustfmt",
+				"shfmt",
+				"stylua",
+				"typescript-language-server",
+				"vim-language-server",
+				"yamlfmt",
+				"yapf",
+			},
 		},
 		---@param opts MasonSettings | {ensure_installed: string[]}
 		config = function(_, opts)

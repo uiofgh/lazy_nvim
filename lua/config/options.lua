@@ -1,3 +1,8 @@
+if vim.fn.has "win32" == 1 then
+	vim.g.python3_host_prog = "~/.pyenv/pyenv-win/versions/nvim/scripts/python.exe"
+else
+	vim.g.python3_host_prog = "~/.pyenv/versions/nvim/bin/python"
+end
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
