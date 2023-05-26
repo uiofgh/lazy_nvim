@@ -13,22 +13,20 @@ return {
 	{
 		"nvim-telescope/telescope.nvim",
 		cmd = "Telescope",
-		version = "0.1.0", -- telescope did only one release, so use HEAD for now
+		version = "0.1.0",
 		keys = {
 			{ "<leader>f", Util.telescope "files", desc = "Find Files (root dir)" },
 			{
 				"<leader>a",
 				Util.telescope("live_grep", {
-					addtional_args = function(opts)
-						return Util.is_gbk(vim.api.nvim_buf_get_name(opts.bufnr)) and { "-E gbk" } or {}
-					end,
+					additional_args = function(opts) return Util.is_gbk(opts.cwd) and { "-E gbk" } or {} end,
 				}),
 				desc = "Grep (root dir)",
 			},
 			{
 				"<leader>s",
 				Util.telescope("grep_string", {
-					addtional_args = function(opts)
+					additional_args = function(opts)
 						return Util.is_gbk(vim.api.nvim_buf_get_name(opts.bufnr)) and { "-E gbk" } or {}
 					end,
 				}),
