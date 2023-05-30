@@ -33,14 +33,14 @@ function M.get()
 			{ "[e", M.diagnostic_goto(false, "ERROR"), desc = "Prev Error" },
 			{ "]w", M.diagnostic_goto(true, "WARN"), desc = "Next Warning" },
 			{ "[w", M.diagnostic_goto(false, "WARN"), desc = "Prev Warning" },
-			{ "<leader>cf", format, desc = "Format Document", has = "documentFormatting" },
-			{
-				"<leader>cf",
-				format,
-				desc = "Format Range",
-				mode = "v",
-				has = "documentRangeFormatting",
-			},
+			-- { "<leader>cf", format, desc = "Format Document", has = "documentFormatting" },
+			-- {
+			-- 	"<leader>cf",
+			-- 	format,
+			-- 	desc = "Format Range",
+			-- 	mode = "v",
+			-- 	has = "documentRangeFormatting",
+			-- },
 			{
 				"<leader>ca",
 				vim.lsp.buf.code_action,

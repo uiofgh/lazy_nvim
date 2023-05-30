@@ -25,7 +25,7 @@ map("n", "<leader>p", '"0p')
 map("n", "Y", "y$")
 map("n", "gb", "gT")
 map("n", "x", '"_x')
-map("n", "<leader>cf", function() vim.fn.setreg("*", vim.fn.expand "%:t:r") end)
+map("n", "<leader>cf", function() vim.fn.setreg("+", vim.fn.expand "%:t:r") end)
 map("n", "gx", ":tabclose<CR>", { silent = true })
 
 -- delete spell keymap
