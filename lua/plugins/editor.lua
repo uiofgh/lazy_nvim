@@ -13,7 +13,6 @@ return {
 	{
 		"nvim-telescope/telescope.nvim",
 		cmd = "Telescope",
-		version = "0.1.0",
 		keys = {
 			{ "<leader>f", Util.telescope "files", desc = "Find Files (root dir)" },
 			{
