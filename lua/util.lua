@@ -218,7 +218,7 @@ function M.lsp_disable(server, cond)
 end
 
 function M.is_dh3(path)
-	if path:find "sunshine_dh3" then return end
+	if path:find "Sunshine" then return end
 	if path:find "dh3" or path:find "dh25" then return true end
 end
 
