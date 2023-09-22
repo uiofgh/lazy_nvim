@@ -177,6 +177,7 @@ return {
 				configs[Util.CUSTOM_LSP.XY3_LUA] = {
 					default_config = {
 						cmd = { Util.is_win() and "luahelper-lsp.cmd" or "luahelper-lsp", "--mode=1" },
+						-- cmd = vim.lsp.rpc.connect("127.0.0.1", 7778),
 						filetypes = { "lua", "pto", "tbl" },
 						root_dir = require("lspconfig").util.root_pattern(Util.lsp_root_patterns),
 						init_options = {
@@ -331,5 +332,14 @@ return {
 		opts = {
 			default_mappings = true,
 		},
+	},
+	-- A pretty list for showing diagnostics, references, telescope results, quickfix and location lists to help you solve all the trouble your code is causing.
+	{
+		"folke/trouble.nvim",
+		dependencies = { "nvim-tree/nvim-web-devicons" },
+		opts = {
+			mode = "document_diagnostics",
+		},
+		keys = { { "<leader>ct", "<cmd>TroubleToggle<cr>", desc = "TroubleToggle" } },
 	},
 }
