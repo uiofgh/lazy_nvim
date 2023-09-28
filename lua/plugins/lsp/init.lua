@@ -72,6 +72,7 @@ return {
 						completeUnimported = true,
 						semanticHighlighting = true,
 					},
+					offsetEncoding = { "gbk" },
 				},
 				html = {},
 			},
