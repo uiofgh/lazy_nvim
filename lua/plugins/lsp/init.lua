@@ -72,7 +72,9 @@ return {
 						completeUnimported = true,
 						semanticHighlighting = true,
 					},
-					offsetEncoding = { "gbk" },
+					capabilities = {
+						offsetEncoding = { "gbk" },
+					},
 				},
 				html = {},
 			},
@@ -194,8 +196,13 @@ return {
 			end
 
 			local function setup(server)
+				local server_capabilities = capabilities
+				if servers[server] and servers[server].capabilities then
+					server_capabilities =
+						vim.tbl_deep_extend("force", server_capabilities, servers[server].capabilities)
+				end
 				local server_opts = vim.tbl_deep_extend("force", {
-					capabilities = vim.deepcopy(capabilities),
+					capabilities = server_capabilities,
 				}, servers[server] or {})
 
 				if opts.setup[server] then
