@@ -10,23 +10,29 @@ local function map(mode, lhs, rhs, opts)
 end
 
 -- keymap
-map("n", "<leader>w", ":w<CR>", { silent = true })
-map("n", "<C-c>", '"+y')
-map("v", "<C-c>", '"+y')
-map("n", "<leader>v", '"+p')
-map("v", "<C-v>", '"_d"+p')
-map("i", "<C-v>", "<C-r>+")
-map("c", "<C-v>", "<C-r>+")
+map("n", "<leader>w", ":w<CR>", { silent = true, desc = "Save" })
+map("n", "<C-c>", '"+y', { desc = "Copy to clipboard" })
+map("v", "<C-c>", '"+y', { desc = "Copy to clipboard" })
+map("n", "<leader>v", '"+p', { desc = "Paste from clipboard" })
+map("v", "<C-v>", '"_d"+p', { desc = "Paste from clipboard" })
+map("i", "<C-v>", "<C-r>+", { desc = "Paste from clipboard" })
+map("c", "<C-v>", "<C-r>+", { desc = "Paste from clipboard" })
 map("v", "<tab>", ">")
 map("v", "<S-tab>", "<")
-map("v", "//", '"vy/<C-r>v<CR>')
+map("v", "//", '"vy/<C-r>v<CR>', { desc = "Search selected text" })
 map("v", "p", '_d"0P')
-map("n", "<leader>p", '"0p')
+map("n", "<leader>p", '"0p', { desc = "Paste last yanked text" })
 map("n", "Y", "y$")
 map("n", "gb", "gT")
 map("n", "x", '"_x')
-map("n", "<leader>cf", function() vim.fn.setreg("+", vim.fn.expand "%:t:r") end)
-map("n", "gx", ":tabclose<CR>", { silent = true })
+map(
+	"n",
+	"<leader>cf",
+	function() vim.fn.setreg("+", vim.fn.expand "%:t:r") end,
+	{ desc = "Copy filename without extension" }
+)
+map("n", "gx", ":tabclose<CR>", { silent = true, desc = "Close tab" })
+map("n", "<leader>cl", "<cmd>Lazy<cr>", { silent = true, desc = "Lazy" })
 
 -- delete spell keymap
 map("n", "zg", "<nop>")
