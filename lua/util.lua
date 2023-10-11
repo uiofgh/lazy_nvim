@@ -22,14 +22,6 @@ end
 ---@param plugin string
 function M.has(plugin) return require("lazy.core.config").plugins[plugin] ~= nil end
 
-function M.fg(name)
-	---@type {foreground?:number}?
-	local hl = vim.api.nvim_get_hl and vim.api.nvim_get_hl(0, { name = name })
-		or vim.api.nvim_get_hl_by_name(name, true)
-	local fg = hl and hl.fg or hl.foreground
-	return fg and { fg = string.format("#%06x", fg) }
-end
-
 ---@param fn fun()
 function M.on_very_lazy(fn)
 	vim.api.nvim_create_autocmd("User", {
@@ -66,7 +58,7 @@ function M.get_root()
 				or {}
 			for _, p in ipairs(paths) do
 				local r = vim.loop.fs_realpath(p)
-				if path:find(r, 1, true) then roots[#roots + 1] = r end
+				if r and path:find(r, 1, true) then roots[#roots + 1] = r end
 			end
 		end
 	end
@@ -176,6 +168,7 @@ function M.lazy_notify()
 
 	local timer = vim.loop.new_timer()
 	local check = vim.loop.new_check()
+	if not check then return end
 
 	local replay = function()
 		timer:stop()

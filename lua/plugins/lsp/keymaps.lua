@@ -3,7 +3,7 @@ local M = {}
 ---@type PluginLspKeys
 M._keys = nil
 
----@return (LazyKeys|{has?:string})[]
+---@return (LazyKeysSpec|{has?:string})[]
 function M.get()
 	if not M._keys then
 		---@class PluginLspKeys
