@@ -601,4 +601,28 @@ return {
 		build = "make",
 		enabled = vim.fn.executable "make",
 	},
+	-- Adds better text object to operate such as ci, cA,
+	{
+		"wellle/targets.vim",
+		event = "VeryLazy",
+	},
+	--
+	{
+		"RRethy/vim-illuminate",
+		opts = {
+			delay = 50,
+		},
+		config = function(_, opts)
+			require("illuminate").configure(opts)
+			vim.cmd [[
+augroup illuminate_augroup
+    autocmd!
+    autocmd VimEnter * hi illuminatedWord cterm=underline gui=underline
+    autocmd VimEnter * hi illuminatedWordRead cterm=underline gui=underline
+    autocmd VimEnter * hi illuminatedWordWrite cterm=underline gui=underline
+    autocmd VimEnter * hi illuminatedWordText cterm=underline gui=underline
+augroup END
+			]]
+		end,
+	},
 }

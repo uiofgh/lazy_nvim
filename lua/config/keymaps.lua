@@ -33,6 +33,7 @@ map(
 )
 map("n", "gx", ":tabclose<CR>", { silent = true, desc = "Close tab" })
 map("n", "<leader>cl", "<cmd>Lazy<cr>", { silent = true, desc = "Lazy" })
+map("n", "*", [[m`:keepjumps normal! *``<CR>]], { noremap = true, silent = true }) -- word boundary search, no autojump
 
 -- delete spell keymap
 map("n", "zg", "<nop>")
