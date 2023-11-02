@@ -46,6 +46,7 @@ opt.undofile = true
 opt.scrolloff = 5
 opt.signcolumn = "yes"
 opt.title = true
+opt.jumpoptions = { "stack", "view" }
 
 -- fold
 opt.foldcolumn = "1" -- '0' is not bad
