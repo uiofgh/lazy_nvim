@@ -36,7 +36,6 @@ return {
 			"hrsh7th/cmp-path",
 			"saadparwaiz1/cmp_luasnip",
 			"lukas-reineke/cmp-rg",
-			"FelipeLema/cmp-async-path",
 			"hrsh7th/cmp-cmdline",
 			"dmitmel/cmp-cmdline-history",
 			"rcarriga/cmp-dap",
