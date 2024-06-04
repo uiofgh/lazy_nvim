@@ -245,8 +245,32 @@ return {
 	},
 	-- multi cursor
 	{
-		"terryma/vim-multiple-cursors",
+		"smoka7/multicursors.nvim",
 		event = "VeryLazy",
+		dependencies = {
+			"smoka7/hydra.nvim",
+		},
+		opts = {
+			normal_keys = {
+				["<C-n>"] = {
+					method = function() require("multicursors.normal_mode").find_next() end,
+					opts = { desc = "Find Next" },
+				},
+				["j"] = { method = false },
+				["k"] = { method = false },
+				["J"] = { method = false },
+				["K"] = { method = false },
+			},
+		},
+		cmd = { "MCstart", "MCvisual", "MCclear", "MCpattern", "MCvisualPattern", "MCunderCursor" },
+		keys = {
+			{
+				mode = { "v", "n" },
+				"<C-n>",
+				"<cmd>MCstart<cr>",
+				desc = "Create a selection for selected text or word under the cursor",
+			},
+		},
 	},
 	-- jump around with s key
 	{
