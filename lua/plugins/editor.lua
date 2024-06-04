@@ -649,4 +649,12 @@ augroup END
 			]]
 		end,
 	},
+	{
+		"MagicDuck/grug-far.nvim",
+		config = function()
+			require("grug-far").setup {
+				extraRgArgs = "-E gbk",
+			}
+		end,
+	},
 }
