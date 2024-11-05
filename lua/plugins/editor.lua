@@ -582,10 +582,10 @@ return {
 					end,
 				},
 			}
-			vim.api.nvim_create_user_command("SaveProject", function()
+			vim.api.nvim_create_user_command("SaveProject", function(args)
 				sessions.save(nil, {})
-				workspaces.add_swap()
-			end, { desc = "Add current directory as workspace and create session." })
+				workspaces.add_swap(args.args)
+			end, { desc = "Add current directory as workspace and create session.", nargs = "*" })
 		end,
 		dependencies = {
 			{
