@@ -584,7 +584,9 @@ return {
 			}
 			vim.api.nvim_create_user_command("SaveProject", function(args)
 				sessions.save(nil, {})
-				workspaces.add_swap(args.args)
+				local name = args.args
+				if name == "" then name = nil end
+				workspaces.add_swap(name)
 			end, { desc = "Add current directory as workspace and create session.", nargs = "*" })
 		end,
 		dependencies = {
