@@ -5,7 +5,7 @@ return {
 	{
 		"notjedi/nvim-rooter.lua",
 		opts = {
-			rooter_patterns = { ".vimrc.lua", ".git", ".local.vimrc", ".git/" },
+			rooter_patterns = Util.root_patterns,
 			trigger_patterns = { "*" },
 			manual = false,
 		},
@@ -488,6 +488,7 @@ return {
 					-- auto_resize = true,
 					number = false,
 					relativenumber = false,
+					preserve_window_proportions = true,
 				},
 				on_attach = on_attach,
 			}
@@ -575,8 +576,8 @@ return {
 							local bufnr = buf.bufnr
 							vim.api.nvim_buf_delete(bufnr, { force = false, unload = false })
 						end
-						for _, client in pairs(vim.lsp.get_active_clients()) do
-							if client.name ~= "null-ls" then client:stop() end
+						for _, client in pairs(vim.lsp.get_clients()) do
+							if client.name ~= "null-ls" then client.stop() end
 						end
 						sessions.load(nil, { silent = true })
 					end,
@@ -653,10 +654,12 @@ augroup END
 	},
 	{
 		"MagicDuck/grug-far.nvim",
-		config = function()
-			require("grug-far").setup {
-				extraRgArgs = "-E gbk",
-			}
-		end,
+		opts = {
+			engines = {
+				ripgrep = {
+					extraArgs = "-E gbk",
+				},
+			},
+		},
 	},
 }

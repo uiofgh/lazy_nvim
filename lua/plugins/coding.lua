@@ -111,6 +111,7 @@ return {
 						max_item_count = 20,
 					},
 					{ name = "path" },
+					{ name = "lazydev" },
 				},
 				formatting = {
 					format = function(_, item)
@@ -170,5 +171,10 @@ return {
 				placement = "edge",
 			},
 		},
+	},
+	-- A task runner and job management plugin
+	{
+		"stevearc/overseer.nvim",
+		opts = {},
 	},
 }

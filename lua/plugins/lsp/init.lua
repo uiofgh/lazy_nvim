@@ -7,7 +7,17 @@ return {
 		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
 			{ "folke/neoconf.nvim", cmd = "Neoconf", config = true },
-			{ "folke/neodev.nvim", opts = { experimental = { pathStrict = true } } },
+			{
+				"folke/lazydev.nvim",
+				ft = "lua", -- only load on lua files
+				opts = {
+					library = {
+						-- See the configuration section for more details
+						-- Load luvit types when the `vim.uv` word is found
+						{ path = "${3rd}/luv/library", words = { "vim%.uv" } },
+					},
+				},
+			},
 			"mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
 			"hrsh7th/cmp-nvim-lsp",
@@ -73,8 +83,12 @@ return {
 						semanticHighlighting = true,
 					},
 					capabilities = {
-						offsetEncoding = { "gbk" },
+						-- offsetEncoding = { "gbk" },
 					},
+					on_new_config = function(new_config, _)
+						local status, cmake = pcall(require, "cmake-tools")
+						if status then cmake.clangd_on_new_config(new_config) end
+					end,
 				},
 				html = {},
 			},
@@ -129,45 +143,45 @@ return {
 			)
 
 			vim.lsp.handlers["textDocument/references"] = vim.lsp.with(function(err, result, ctx, config)
-				if not result or vim.tbl_isempty(result) then
+				if not result or vim.tbl_isempty(result) then vim.notify "No references found" end
+				local client = vim.lsp.get_client_by_id(ctx.client_id)
+				if not client then return end
+				config = config or {}
+				local title = "References"
+				local items = vim.lsp.util.locations_to_items(result, client.offset_encoding)
+				local filepath = vim.api.nvim_buf_get_name(ctx.bufnr)
+				local lnum = ctx.params.position.line + 1
+				items = vim.tbl_filter(function(v)
+					-- Remove current line from result
+					return not (v.filename == filepath and v.lnum == lnum)
+				end, vim.F.if_nil(items, {}))
+
+				if vim.tbl_isempty(items) then
 					vim.notify "No references found"
-				else
-					local client = vim.lsp.get_client_by_id(ctx.client_id)
-					config = config or {}
-					local title = "References"
-					local items = vim.lsp.util.locations_to_items(result, client.offset_encoding)
-					local filepath = vim.api.nvim_buf_get_name(ctx.bufnr)
-					local lnum = ctx.params.position.line + 1
-					items = vim.tbl_filter(function(v)
-						-- Remove current line from result
-						return not (v.filename == filepath and v.lnum == lnum)
-					end, vim.F.if_nil(items, {}))
+					return
+				end
 
-					if vim.tbl_isempty(items) then
-						vim.notify "No references found"
-						return
-					end
-
-					if #items == 1 then
-						-- jump to location
-						local location = items[1]
-						local bufnr = ctx.bufnr
-						if location.filename then bufnr = vim.uri_to_bufnr(vim.uri_from_fname(location.filename)) end
+				if #items == 1 then
+					-- jump to location
+					local location = items[1]
+					local bufnr = ctx.bufnr
+					if location.filename then bufnr = vim.uri_to_bufnr(vim.uri_from_fname(location.filename)) end
+					if bufnr then
 						vim.api.nvim_win_set_buf(0, bufnr)
 						vim.api.nvim_win_set_cursor(0, { location.lnum, location.col - 1 })
-						return
 					end
+					return
+				end
 
-					if config.loclist then
-						vim.fn.setloclist(0, {}, " ", { title = title, items = items, context = ctx })
-						vim.api.nvim_command "lopen"
-					elseif config.on_list then
-						assert(type(config.on_list) == "function", "on_list is not a function")
-						config.on_list { title = title, items = items, context = ctx }
-					else
-						vim.fn.setqflist({}, " ", { title = title, items = items, context = ctx })
-						vim.api.nvim_command "botright copen"
-					end
+				if config.loclist then
+					vim.fn.setloclist(0, {}, " ", { title = title, items = items, context = ctx })
+					vim.api.nvim_command "lopen"
+				elseif config.on_list then
+					assert(type(config.on_list) == "function", "on_list is not a function")
+					config.on_list { title = title, items = items, context = ctx }
+				else
+					vim.fn.setqflist({}, " ", { title = title, items = items, context = ctx })
+					vim.api.nvim_command "botright copen"
 				end
 			end, {})
 
@@ -267,9 +281,7 @@ return {
 					nls.builtins.formatting.stylua,
 					nls.builtins.formatting.shfmt,
 					nls.builtins.formatting.yapf,
-					nls.builtins.formatting.clang_format,
 					nls.builtins.formatting.prettier,
-					nls.builtins.formatting.rustfmt,
 					nls.builtins.formatting.gofumpt,
 				},
 			}
@@ -288,7 +300,6 @@ return {
 				"lua:plugins.lsp.mason.index",
 			},
 			ensure_installed = {
-				"clang-format",
 				"cmake-language-server",
 				"go-debug-adapter",
 				"gofumpt",
@@ -297,7 +308,6 @@ return {
 				"pyright",
 				"prettier",
 				"rust-analyzer",
-				"rustfmt",
 				"shfmt",
 				"stylua",
 				"typescript-language-server",
@@ -346,6 +356,6 @@ return {
 		opts = {
 			mode = "document_diagnostics",
 		},
-		keys = { { "<leader>ct", "<cmd>TroubleToggle<cr>", desc = "TroubleToggle" } },
+		keys = { { "<leader>ct", "<cmd>Trouble diagnostics toggle<cr>", desc = "TroubleToggle" } },
 	},
 }
