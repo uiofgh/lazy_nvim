@@ -175,6 +175,9 @@ return {
 	-- A task runner and job management plugin
 	{
 		"stevearc/overseer.nvim",
+		keys = {
+			{ "<leader>ou", "<cmd>OverseerToggle<cr>", desc = "Overseer UI" },
+		},
 		opts = {},
 	},
 }

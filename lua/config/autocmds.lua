@@ -44,6 +44,8 @@ vim.api.nvim_create_autocmd("FileType", {
 		"tsplayground",
 		"checkhealth",
 		"grug-far",
+		"OverseerList",
+		"cmake_tools_terminal",
 	},
 	callback = function(event)
 		vim.bo[event.buf].buflisted = false

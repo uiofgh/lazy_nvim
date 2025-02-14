@@ -358,4 +358,20 @@ return {
 		},
 		keys = { { "<leader>ct", "<cmd>Trouble diagnostics toggle<cr>", desc = "TroubleToggle" } },
 	},
+	-- CMake integration
+	{
+		"Civitasv/cmake-tools.nvim",
+		opts = {
+			cmake_runner = {
+				name = "overseer",
+			},
+			cmake_executer = {
+				name = "overseer",
+			},
+			cmake_notifications = {
+				runner = { enabled = false },
+				executor = { enabled = false },
+			},
+		},
+	},
 }
