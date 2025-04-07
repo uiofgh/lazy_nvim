@@ -62,3 +62,15 @@ map("n", "<F8>", function()
 	if index > #encodings then index = 1 end
 	vim.g.enc_index = index
 end, { silent = true })
+
+if vim.g.vscode then
+	local vscode = require "vscode"
+	map("n", "gt", function() vscode.action "workbench.action.nextEditor" end)
+	map("n", "gb", function() vscode.action "workbench.action.previousEditor" end)
+	map("n", "gr", function() vscode.action "editor.action.goToReferences" end)
+	map("n", "rn", function() vscode.action "editor.action.rename" end)
+	map("n", "<leader>a", function() vscode.action "workbench.action.findInFiles" end)
+	map("n", "<leader>s", function() vscode.action "workbench.action.showAllSymbols" end)
+	map("n", "<leader>f", function() vscode.action "workbench.action.quickOpen" end)
+	map("n", "<leader>t", function() vscode.action "workbench.action.showCommands" end)
+end
