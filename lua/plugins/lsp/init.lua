@@ -280,7 +280,12 @@ return {
 				sources = {
 					nls.builtins.formatting.stylua,
 					nls.builtins.formatting.shfmt,
-					nls.builtins.formatting.yapf,
+					nls.builtins.formatting.yapf.with {
+						cwd = function(params)
+							-- falls back to root if return value is nil
+							return require("null-ls.utils").root_pattern "pyproject.toml"(params.bufname)
+						end,
+					},
 					nls.builtins.formatting.prettier,
 					nls.builtins.formatting.gofumpt,
 				},
