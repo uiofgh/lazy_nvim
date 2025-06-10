@@ -293,6 +293,11 @@ return {
 			filetypes = {
 				"*",
 				"!dapui*",
+				"!Telescope*",
+				lua = {
+					RGB = false,
+					RGBA = false,
+				},
 			},
 			user_default_options = {
 				names = false,
