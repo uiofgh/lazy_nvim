@@ -145,11 +145,10 @@ end
 local enabled = true
 function M.toggle_diagnostics()
 	enabled = not enabled
+	vim.diagnostic.enable(enabled)
 	if enabled then
-		vim.diagnostic.enable()
 		Util.info("Enabled diagnostics", { title = "Diagnostics" })
 	else
-		vim.diagnostic.disable()
 		Util.warn("Disabled diagnostics", { title = "Diagnostics" })
 	end
 end
@@ -167,6 +166,7 @@ function M.lazy_notify()
 	vim.notify = temp
 
 	local timer = vim.loop.new_timer()
+	if not timer then return end
 	local check = vim.loop.new_check()
 	if not check then return end
 
@@ -200,14 +200,14 @@ end
 ---@param server string
 ---@param cond fun( root_dir, config): boolean
 function M.lsp_disable(server, cond)
+	do
+		return
+	end
 	local util = require "lspconfig.util"
 	local def = M.lsp_get_config(server)
-	def.document_config.on_new_config = util.add_hook_before(
-		def.document_config.on_new_config,
-		function(config, root_dir)
-			if cond(root_dir, config) then config.enabled = false end
-		end
-	)
+	def.config_def.on_new_config = util.add_hook_before(def.config_def.on_new_config, function(config, root_dir)
+		if cond(root_dir, config) then config.enabled = false end
+	end)
 end
 
 function M.is_dh3(path)
@@ -216,13 +216,16 @@ function M.is_dh3(path)
 end
 
 function M.is_gbk(path)
+	if path:find "xy3toolbox" then return end
 	if path:find "popo_tool" then return end
 	if path:find "大话3助手" then return end
+	if path:find "shells" then return end
 	return M.is_dh3(path)
 end
 
 function M.is_dos(path)
 	if M.is_dh3(path) then
+		if path:find "xy3toolbox" then return true end
 		if path:find "server" then return end
 	end
 	return true

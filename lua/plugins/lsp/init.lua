@@ -4,6 +4,7 @@ return {
 	-- lspconfig
 	{
 		"neovim/nvim-lspconfig",
+		cond = not vim.g.vscode,
 		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
 			{ "folke/neoconf.nvim", cmd = "Neoconf", config = true },
@@ -65,7 +66,23 @@ return {
 						},
 					},
 				},
-				[Util.CUSTOM_LSP.XY3_LUA] = {},
+				[Util.CUSTOM_LSP.XY3_LUA] = {
+					cmd = { Util.is_win() and "luahelper-lsp.cmd" or "luahelper-lsp", "--mode=1" },
+					-- cmd = vim.lsp.rpc.connect("127.0.0.1", 7778),
+					filetypes = { "lua", "pto", "tbl" },
+					root_markers = { ".vimrc.lua" },
+					init_options = {
+						PluginPath = require("mason-core.installer.InstallLocation")
+							.global()
+							:package(Util.CUSTOM_LSP.XY3_LUA),
+					},
+					docs = {
+						description = [[
+							https://github.com/uiofgh/LuaHelper-xy3
+							Language Server Protocol for Lua.
+						]],
+					},
+				},
 				clangd = {
 					cmd = {
 						"clangd",
@@ -91,6 +108,12 @@ return {
 					end,
 				},
 				html = {},
+				pyright = {},
+				cmake = {},
+				rust_analyzer = {},
+				ts_ls = {},
+				vimls = {},
+				stylua = {},
 			},
 			-- you can do any additional lsp server setup here
 			-- return true if you don't want this server to be setup with lspconfig
@@ -185,30 +208,6 @@ return {
 				end
 			end, {})
 
-			-- add custom lsp
-			local configs = require "lspconfig.configs"
-			if not configs[Util.CUSTOM_LSP.XY3_LUA] then
-				configs[Util.CUSTOM_LSP.XY3_LUA] = {
-					default_config = {
-						cmd = { Util.is_win() and "luahelper-lsp.cmd" or "luahelper-lsp", "--mode=1" },
-						-- cmd = vim.lsp.rpc.connect("127.0.0.1", 7778),
-						filetypes = { "lua", "pto", "tbl" },
-						root_dir = require("lspconfig").util.root_pattern(Util.lsp_root_patterns),
-						init_options = {
-							PluginPath = require("mason-core.path").concat {
-								require("mason-core.path").package_prefix(Util.CUSTOM_LSP.XY3_LUA),
-							},
-						},
-					},
-					docs = {
-						description = [[
-							https://github.com/uiofgh/LuaHelper-xy3
-							Language Server Protocol for Lua.
-						]],
-					},
-				}
-			end
-
 			local function setup(server)
 				local server_capabilities = capabilities
 				if servers[server] and servers[server].capabilities then
@@ -224,7 +223,7 @@ return {
 				elseif opts.setup["*"] then
 					if opts.setup["*"](server, server_opts) then return end
 				else
-					require("lspconfig")[server].setup(server_opts)
+					vim.lsp.config(server, server_opts)
 				end
 			end
 
@@ -232,10 +231,8 @@ return {
 			local have_mason, mlsp = pcall(require, "mason-lspconfig")
 			local all_mslp_servers = {}
 			if have_mason then
-				local server_mapping = require "mason-lspconfig.mappings.server"
-				server_mapping.lspconfig_to_package[Util.CUSTOM_LSP.XY3_LUA] = Util.CUSTOM_LSP.XY3_LUA
-				server_mapping.package_to_lspconfig[Util.CUSTOM_LSP.XY3_LUA] = Util.CUSTOM_LSP.XY3_LUA
-				all_mslp_servers = vim.tbl_keys(server_mapping.lspconfig_to_package)
+				local server_mapping = require "mason-lspconfig.mappings"
+				all_mslp_servers = vim.tbl_keys(server_mapping.get_all().lspconfig_to_package)
 			end
 
 			local ensure_installed = {} ---@type string[]
@@ -249,12 +246,10 @@ return {
 						ensure_installed[#ensure_installed + 1] = server
 					end
 				end
+				if server ~= "lua_ls" then vim.lsp.enable(server, true) end
 			end
 
-			if have_mason then
-				mlsp.setup { ensure_installed = ensure_installed }
-				mlsp.setup_handlers { setup }
-			end
+			if have_mason then mlsp.setup { ensure_installed = ensure_installed, automatic_enable = false } end
 
 			if Util.lsp_get_config "denols" and Util.lsp_get_config "tsserver" then
 				local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
@@ -271,6 +266,7 @@ return {
 	-- formatters
 	{
 		"nvimtools/none-ls.nvim",
+		cond = not vim.g.vscode,
 		event = { "BufReadPre", "BufNewFile" },
 		dependencies = { "mason.nvim" },
 		opts = function()
@@ -296,13 +292,13 @@ return {
 	-- cmdline tools and lsp servers
 	{
 		"williamboman/mason.nvim",
+		cond = not vim.g.vscode,
 		cmd = "Mason",
 		keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
 		build = ":MasonUpdate",
 		opts = {
 			registries = {
 				"github:mason-org/mason-registry",
-				"lua:plugins.lsp.mason.index",
 			},
 			ensure_installed = {
 				"cmake-language-server",
@@ -342,6 +338,7 @@ return {
 	-- ui for lsp progress
 	{
 		"j-hui/fidget.nvim",
+		cond = not vim.g.vscode,
 		event = "LspAttach",
 		opts = {},
 		tag = "legacy",
@@ -350,6 +347,7 @@ return {
 	-- preview window for lsp
 	{
 		"rmagatti/goto-preview",
+		cond = not vim.g.vscode,
 		opts = {
 			default_mappings = true,
 		},
@@ -357,6 +355,7 @@ return {
 	-- A pretty list for showing diagnostics, references, telescope results, quickfix and location lists to help you solve all the trouble your code is causing.
 	{
 		"folke/trouble.nvim",
+		cond = not vim.g.vscode,
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		opts = {
 			mode = "document_diagnostics",
@@ -366,6 +365,7 @@ return {
 	-- CMake integration
 	{
 		"Civitasv/cmake-tools.nvim",
+		cond = not vim.g.vscode,
 		opts = {
 			cmake_runner = {
 				name = "overseer",
@@ -378,5 +378,10 @@ return {
 				executor = { enabled = false },
 			},
 		},
+	},
+	-- copilot
+	{
+		"github/copilot.vim",
+		enabled = false,
 	},
 }

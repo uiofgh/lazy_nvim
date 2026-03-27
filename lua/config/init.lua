@@ -55,6 +55,7 @@ function M.setup(opts)
 	end
 
 	require("lazy.core.util").try(function()
+		if vim.g.vscode then return end
 		if type(M.colorscheme) == "function" then
 			M.colorscheme()
 		else

@@ -12,6 +12,7 @@ return {
 	},
 	{
 		"nvim-telescope/telescope.nvim",
+		cond = not vim.g.vscode,
 		cmd = "Telescope",
 		keys = {
 			{ "<leader>f", Util.telescope "files", desc = "Find Files (root dir)" },
@@ -50,7 +51,9 @@ return {
 					},
 				},
 				buffer_previewer_maker = function(filepath, bufnr, opts)
-					if opts.bufname ~= filepath and Util.is_gbk(filepath) then
+					local utf8_exts = { "md", "json", "yml", "yaml", "xml", "toml", "spec" }
+					local is_utf8 = vim.tbl_contains(utf8_exts, vim.fn.fnamemodify(filepath, ":e"))
+					if opts.bufname ~= filepath and Util.is_gbk(filepath) and not is_utf8 then
 						local ori_callback = opts.callback
 						opts.callback = function(bufnr2)
 							local content =
@@ -126,6 +129,7 @@ return {
 	-- better quickfix window
 	{
 		"kevinhwang91/nvim-bqf",
+		cond = not vim.g.vscode,
 		event = "VeryLazy",
 		config = function()
 			local fn = vim.fn
@@ -229,6 +233,7 @@ return {
 	-- better folding
 	{
 		"kevinhwang91/nvim-ufo",
+		cond = not vim.g.vscode,
 		lazy = false,
 		opts = {
 			provider_selector = function(bufnr, filetype, buftype) return { "treesitter", "indent" } end,
@@ -308,6 +313,7 @@ return {
 	-- rsync file to remote
 	{
 		"uiofgh/rsync.nvim",
+		cond = not vim.g.vscode,
 		event = { "BufWritePost", "FileWritePost" },
 	},
 	-- workspace config file
@@ -322,16 +328,19 @@ return {
 	-- clipboard manage
 	{
 		"AckslD/nvim-neoclip.lua",
+		cond = not vim.g.vscode,
 		event = "VeryLazy",
 	},
 	-- undo tree
 	{
 		"debugloop/telescope-undo.nvim",
+		cond = not vim.g.vscode,
 		event = "VeryLazy",
 	},
 	-- fully integrated terminal
 	{
 		"akinsho/toggleterm.nvim",
+		cond = not vim.g.vscode,
 		event = "VeryLazy",
 		config = function()
 			require("toggleterm").setup {
@@ -366,6 +375,7 @@ return {
 	-- file system explorer
 	{
 		"nvim-tree/nvim-tree.lua",
+		cond = not vim.g.vscode,
 		keys = {
 			{ "<F3>", function() require("nvim-tree.api").tree.toggle() end },
 		},
@@ -502,6 +512,7 @@ return {
 	-- startup screen
 	{
 		"uiofgh/dashboard-nvim",
+		cond = not vim.g.vscode,
 		event = "VimEnter",
 		opts = {
 			theme = "hyper",
@@ -551,6 +562,7 @@ return {
 	-- manage workspace and project
 	{
 		"natecraddock/workspaces.nvim",
+		cond = not vim.g.vscode,
 		event = "VeryLazy",
 		config = function()
 			local workspaces = require "workspaces"
@@ -609,6 +621,7 @@ return {
 	-- speical word mode
 	{
 		"nvim-neorg/neorg",
+		cond = not vim.g.vscode,
 		-- lazy-load on filetype
 		ft = "norg",
 		-- options for neorg. This will automatically call `require("neorg").setup(opts)`
@@ -629,6 +642,7 @@ return {
 	-- telescope fuzzy finding
 	{
 		"nvim-telescope/telescope-fzf-native.nvim",
+		cond = not vim.g.vscode,
 		event = "VeryLazy",
 		build = "make",
 		enabled = vim.fn.executable "make",
@@ -641,6 +655,7 @@ return {
 	--
 	{
 		"RRethy/vim-illuminate",
+		cond = not vim.g.vscode,
 		opts = {
 			delay = 50,
 		},
@@ -659,6 +674,7 @@ augroup END
 	},
 	{
 		"MagicDuck/grug-far.nvim",
+		cond = not vim.g.vscode,
 		opts = {
 			engines = {
 				ripgrep = {

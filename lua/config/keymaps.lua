@@ -73,4 +73,8 @@ if vim.g.vscode then
 	map("n", "<leader>s", function() vscode.action "workbench.action.showAllSymbols" end)
 	map("n", "<leader>f", function() vscode.action "workbench.action.quickOpen" end)
 	map("n", "<leader>t", function() vscode.action "workbench.action.showCommands" end)
+	map("n", "<C-w><C-j>", function() vscode.action "workbench.action.navigateDown" end)
+	map("n", "<C-w><C-k>", function() vscode.action "workbench.action.navigateUp" end)
+	map("n", "<C-w><C-h>", function() vscode.action "workbench.action.navigateLeft" end)
+	map("n", "<C-w><C-l>", function() vscode.action "workbench.action.navigateRight" end)
 end

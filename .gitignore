@@ -2,3 +2,4 @@ lazy-lock.json
 .luarc.json
 .vimrc.lua
 /lazy-lock.json.bak
+lua/.DS_Store

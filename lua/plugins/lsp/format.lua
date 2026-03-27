@@ -9,6 +9,7 @@ M.format_path = {
 	"~/Documents/GitHub/toolbox",
 	"~/Documents/GitHub/DearPyGuiApp",
 	"~/.config",
+	"~/work/dh3/inner_client/xy3toolbox",
 }
 
 function M.toggle()

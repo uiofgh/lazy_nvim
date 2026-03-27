@@ -4,6 +4,7 @@ return {
 	-- statusline
 	{
 		"nvim-lualine/lualine.nvim",
+		cond = not vim.g.vscode,
 		opts = function()
 			local function normal_path(path) return string.gsub(path, "\\", "/") end
 
@@ -122,6 +123,7 @@ return {
 	-- message window
 	{
 		"rcarriga/nvim-notify",
+		cond = not vim.g.vscode,
 		opts = {
 			background_colour = "#27292d",
 		},
@@ -129,6 +131,7 @@ return {
 	-- bufferline
 	{
 		"akinsho/bufferline.nvim",
+		cond = not vim.g.vscode,
 		opts = {
 			options = {
 				mode = "tabs",

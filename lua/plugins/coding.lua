@@ -4,6 +4,7 @@ return {
 	-- comment code
 	{
 		"numToStr/Comment.nvim",
+		cond = not vim.g.vscode,
 		opts = { mappings = false },
 		keys = {
 			{
@@ -21,6 +22,7 @@ return {
 	-- auto close ([{
 	{
 		"windwp/nvim-autopairs",
+		cond = not vim.g.vscode,
 		event = "VeryLazy",
 		opts = { map_cr = false },
 	},
@@ -28,6 +30,7 @@ return {
 	-- auto completion
 	{
 		"hrsh7th/nvim-cmp",
+		cond = not vim.g.vscode,
 		version = false, -- last release is way too old
 		event = "InsertEnter",
 		dependencies = {
@@ -47,7 +50,7 @@ return {
 			local luasnip = require "luasnip"
 			return {
 				completion = {
-					completeopt = "menu,menuone,noselect",
+					completeopt = "menu,menuone",
 				},
 				snippet = {
 					expand = function(args) require("luasnip").lsp_expand(args.body) end,
@@ -61,8 +64,8 @@ return {
 					["<C-e>"] = cmp.mapping.abort(),
 					["<CR>"] = cmp.mapping {
 						i = function(fallback)
-							if cmp.visible() and cmp.get_active_entry() then
-								cmp.confirm { behavior = cmp.ConfirmBehavior.Replace, select = false }
+							if cmp.visible() then
+								cmp.confirm { behavior = cmp.ConfirmBehavior.Insert, select = false }
 							else
 								fallback()
 							end
@@ -74,15 +77,26 @@ return {
 						behavior = cmp.ConfirmBehavior.Replace,
 						select = true,
 					}, -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-					["<Tab>"] = cmp.mapping(function(fallback)
-						if cmp.visible() then
-							cmp.select_next_item()
-						elseif luasnip.expand_or_jumpable() then
-							luasnip.expand_or_jump()
-						else
-							fallback()
-						end
-					end, { "i", "s", "c" }),
+					-- ["<Tab>"] = cmp.mapping(function(fallback)
+					-- 	if cmp.visible() then
+					-- 		cmp.select_next_item()
+					-- 	elseif luasnip.expand_or_jumpable() then
+					-- 		luasnip.expand_or_jump()
+					-- 	else
+					-- 		fallback()
+					-- 	end
+					-- end, { "i", "s", "c" }),
+					["<Tab>"] = cmp.mapping {
+						i = function(fallback)
+							if cmp.visible() then
+								cmp.confirm { behavior = cmp.ConfirmBehavior.Insert, select = false }
+							else
+								fallback()
+							end
+						end,
+						s = cmp.mapping.confirm { select = true },
+						-- c = cmp.mapping.confirm { behavior = cmp.ConfirmBehavior.Replace, select = true },
+					},
 					["<S-Tab>"] = cmp.mapping(function(fallback)
 						if cmp.visible() then
 							cmp.select_prev_item()
@@ -161,6 +175,7 @@ return {
 	-- show code structure tree
 	{
 		"stevearc/aerial.nvim",
+		cond = not vim.g.vscode,
 		keys = {
 			{ "<F4>", "<cmd>AerialToggle<CR>" },
 		},
@@ -175,6 +190,7 @@ return {
 	-- A task runner and job management plugin
 	{
 		"stevearc/overseer.nvim",
+		cond = not vim.g.vscode,
 		keys = {
 			{ "<leader>ou", "<cmd>OverseerToggle<cr>", desc = "Overseer UI" },
 		},
