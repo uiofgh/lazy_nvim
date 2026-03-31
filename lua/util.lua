@@ -223,6 +223,174 @@ function M.is_gbk(path)
 	return M.is_dh3(path)
 end
 
+-- File extensions that are always UTF-8 encoded in GBK projects
+M.utf8_exts = { "md", "json", "yml", "yaml", "xml", "toml", "spec" }
+
+function M.utf8_glob_args()
+	local args = {}
+	for _, ext in ipairs(M.utf8_exts) do
+		args[#args + 1] = "--glob=*." .. ext
+	end
+	return args
+end
+
+function M.gbk_glob_args()
+	local args = {}
+	for _, ext in ipairs(M.utf8_exts) do
+		args[#args + 1] = "--glob=!*." .. ext
+	end
+	return args
+end
+
+function M.mixed_encoding_live_grep(opts)
+	opts = opts or {}
+	return function()
+		opts = vim.tbl_deep_extend("force", { cwd = M.get_root() }, opts)
+		if not M.is_gbk(opts.cwd) then
+			require("telescope.builtin").live_grep(opts)
+			return
+		end
+
+		local base_args = {
+			"rg",
+			"--color=never",
+			"--no-heading",
+			"--with-filename",
+			"--line-number",
+			"--column",
+			"--smart-case",
+			"--hidden",
+			"--glob=!.svn/",
+			"--glob=!.temp/",
+			"--glob=!.cache/",
+		}
+		local gbk_globs = M.gbk_glob_args()
+		local utf8_globs = M.utf8_glob_args()
+
+		local function build_rg_cmd(extra_args, globs, prompt)
+			local parts = {}
+			for _, a in ipairs(base_args) do
+				parts[#parts + 1] = a
+			end
+			for _, a in ipairs(extra_args) do
+				parts[#parts + 1] = a
+			end
+			for _, g in ipairs(globs) do
+				parts[#parts + 1] = g
+			end
+			parts[#parts + 1] = "--"
+			parts[#parts + 1] = prompt
+			return table.concat(parts, " ")
+		end
+
+		local pickers = require "telescope.pickers"
+		local finders = require "telescope.finders"
+		local conf = require("telescope.config").values
+		local make_entry = require "telescope.make_entry"
+		local sorters = require "telescope.sorters"
+		local actions = require "telescope.actions"
+
+		pickers
+			.new(opts, {
+				prompt_title = "Live Grep (Mixed Encoding)",
+				finder = finders.new_async_job {
+					command_generator = function(prompt)
+						if not prompt or prompt == "" then return nil end
+						local escaped = vim.fn.shellescape(prompt)
+						local gbk_cmd = build_rg_cmd({ "-E", "gbk" }, gbk_globs, escaped)
+						local utf8_cmd = build_rg_cmd({}, utf8_globs, escaped)
+						return { "sh", "-c", gbk_cmd .. " ; " .. utf8_cmd }
+					end,
+					entry_maker = make_entry.gen_from_vimgrep(opts),
+					cwd = opts.cwd,
+				},
+				previewer = conf.grep_previewer(opts),
+				sorter = sorters.highlighter_only(opts),
+				attach_mappings = function(_, map)
+					map("i", "<c-space>", actions.to_fuzzy_refine)
+					return true
+				end,
+				push_cursor_on_edit = true,
+			})
+			:find()
+	end
+end
+
+function M.mixed_encoding_grep_string(opts)
+	opts = opts or {}
+	return function()
+		opts = vim.tbl_deep_extend("force", { cwd = M.get_root() }, opts)
+		if not M.is_gbk(opts.cwd) then
+			require("telescope.builtin").grep_string(opts)
+			return
+		end
+
+		local visual = vim.fn.mode() == "v"
+		local word
+		if visual then
+			local saved_reg = vim.fn.getreg "v"
+			vim.cmd [[noautocmd sil norm! "vy]]
+			word = vim.fn.getreg "v"
+			vim.fn.setreg("v", saved_reg)
+		else
+			word = vim.fn.expand "<cword>"
+		end
+		word = tostring(word)
+
+		local base_args = {
+			"rg",
+			"--color=never",
+			"--no-heading",
+			"--with-filename",
+			"--line-number",
+			"--column",
+			"--smart-case",
+			"--hidden",
+			"--glob=!.svn/",
+			"--glob=!.temp/",
+			"--glob=!.cache/",
+		}
+
+		local function build_cmd(extra_args, globs)
+			local cmd = {}
+			for _, a in ipairs(base_args) do
+				cmd[#cmd + 1] = a
+			end
+			for _, a in ipairs(extra_args) do
+				cmd[#cmd + 1] = a
+			end
+			for _, g in ipairs(globs) do
+				cmd[#cmd + 1] = g
+			end
+			cmd[#cmd + 1] = "-w"
+			cmd[#cmd + 1] = "--"
+			cmd[#cmd + 1] = vim.fn.shellescape(word)
+			return table.concat(cmd, " ")
+		end
+
+		local gbk_cmd = build_cmd({ "-E", "gbk" }, M.gbk_glob_args())
+		local utf8_cmd = build_cmd({}, M.utf8_glob_args())
+		local full_cmd = gbk_cmd .. " ; " .. utf8_cmd
+
+		local pickers = require "telescope.pickers"
+		local finders = require "telescope.finders"
+		local conf = require("telescope.config").values
+		local make_entry = require "telescope.make_entry"
+
+		pickers
+			.new(opts, {
+				prompt_title = "Find Word (" .. word:gsub("\n", "\\n") .. ")",
+				finder = finders.new_oneshot_job({ "sh", "-c", full_cmd }, {
+					entry_maker = make_entry.gen_from_vimgrep(opts),
+					cwd = opts.cwd,
+				}),
+				previewer = conf.grep_previewer(opts),
+				sorter = conf.generic_sorter(opts),
+			})
+			:find()
+	end
+end
+
 function M.is_dos(path)
 	if M.is_dh3(path) then
 		if path:find "xy3toolbox" then return true end

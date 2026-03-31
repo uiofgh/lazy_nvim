@@ -15,29 +15,38 @@ return {
 		cond = not vim.g.vscode,
 		cmd = "Telescope",
 		keys = {
-			{ "<leader>f", Util.telescope "files", desc = "Find Files (root dir)" },
 			{
-				"<leader>a",
-				Util.telescope("live_grep", {
-					additional_args = function(opts) return Util.is_gbk(opts.cwd) and { "-E gbk" } or {} end,
-				}),
-				desc = "Grep (root dir)",
+				"<leader>f",
+				Util.telescope(
+					"files",
+					{
+						hidden = true,
+						find_command = { "fd", "--type", "f", "--hidden", "--exclude", ".svn", "--exclude", ".temp" },
+					}
+				),
+				desc = "Find Files (root dir)",
 			},
-			{
-				"<leader>s",
-				Util.telescope("grep_string", {
-					additional_args = function(opts)
-						return Util.is_gbk(vim.api.nvim_buf_get_name(opts.bufnr)) and { "-E gbk" } or {}
-					end,
-				}),
-				desc = "Fuzzy find (root dir)",
-			},
+			{ "<leader>a", Util.mixed_encoding_live_grep(), desc = "Grep (root dir)" },
+			{ "<leader>s", Util.mixed_encoding_grep_string(), desc = "Fuzzy find (root dir)" },
 			{ "<leader>h", "<cmd>Telescope oldfiles<cr>", desc = "Recent" },
 			{ "<leader>r", "<cmd>Telescope resume<cr>", desc = "Resume" },
 			{ "<leader>t", "<cmd>Telescope builtin include_extensions=true<cr>", desc = "Resume" },
 		},
 		opts = {
 			defaults = {
+				vimgrep_arguments = {
+					"rg",
+					"--color=never",
+					"--no-heading",
+					"--with-filename",
+					"--line-number",
+					"--column",
+					"--smart-case",
+					"--hidden",
+					"--glob=!.svn/",
+					"--glob=!.temp/",
+					"--glob=!.cache/",
+				},
 				prompt_prefix = " ",
 				selection_caret = " ",
 				mappings = {
@@ -51,8 +60,7 @@ return {
 					},
 				},
 				buffer_previewer_maker = function(filepath, bufnr, opts)
-					local utf8_exts = { "md", "json", "yml", "yaml", "xml", "toml", "spec" }
-					local is_utf8 = vim.tbl_contains(utf8_exts, vim.fn.fnamemodify(filepath, ":e"))
+					local is_utf8 = vim.tbl_contains(Util.utf8_exts, vim.fn.fnamemodify(filepath, ":e"))
 					if opts.bufname ~= filepath and Util.is_gbk(filepath) and not is_utf8 then
 						local ori_callback = opts.callback
 						opts.callback = function(bufnr2)
