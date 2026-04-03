@@ -125,7 +125,6 @@ return {
 				"fzf",
 				"workspaces",
 				"neoclip",
-				"rsync",
 				"undo",
 				"notify",
 			}
@@ -317,12 +316,6 @@ return {
 				always_update = true,
 			},
 		},
-	},
-	-- rsync file to remote
-	{
-		"uiofgh/rsync.nvim",
-		cond = not vim.g.vscode,
-		event = { "BufWritePost", "FileWritePost" },
 	},
 	-- workspace config file
 	{

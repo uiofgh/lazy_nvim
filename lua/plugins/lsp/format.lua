@@ -5,7 +5,6 @@ local M = {}
 M.autoformat = false
 M.format_path = {
 	"~/shells",
-	vim.fn.fnamemodify(require("util").get_plugin_path "rsync.nvim", ":~"),
 	"~/Documents/GitHub/toolbox",
 	"~/Documents/GitHub/DearPyGuiApp",
 	"~/.config",
