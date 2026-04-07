@@ -1,8 +1,14 @@
 -- lua/svn/attach.lua
+local blame = require("svn.blame")
+
 local M = {}
 
 function M.setup(cfg)
-  -- 占位：后续 Task 会填充 autocmd + buffer attach 逻辑
+  vim.api.nvim_create_autocmd("CursorHold", {
+    callback = function(args)
+      if cfg.blame.enabled then blame.show_line(args.buf, cfg) end
+    end,
+  })
 end
 
 return M
