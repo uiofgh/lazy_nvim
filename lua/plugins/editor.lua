@@ -51,6 +51,7 @@ return {
 					"--column",
 					"--smart-case",
 					"--hidden",
+					"--glob=!.git/",
 					"--glob=!.svn/",
 					"--glob=!.temp/",
 					"--glob=!.cache/",
