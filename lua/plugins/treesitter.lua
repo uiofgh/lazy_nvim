@@ -84,7 +84,7 @@ return {
 				end
 				if not check_compiler() then opts.ensure_installed = {} end
 			end
-			require("nvim-treesitter.configs").setup(opts)
+			require("nvim-treesitter").setup(opts)
 		end,
 	},
 }

@@ -17,13 +17,21 @@ return {
 		keys = {
 			{
 				"<leader>f",
-				Util.telescope(
-					"files",
-					{
-						hidden = true,
-						find_command = { "fd", "--type", "f", "--hidden", "--exclude", ".svn", "--exclude", ".temp" },
-					}
-				),
+				Util.telescope("files", {
+					hidden = true,
+					find_command = {
+						"fd",
+						"--type",
+						"f",
+						"--hidden",
+						"--exclude",
+						".svn",
+						"--exclude",
+						".temp",
+						"--exclude",
+						".git",
+					},
+				}),
 				desc = "Find Files (root dir)",
 			},
 			{ "<leader>a", Util.mixed_encoding_live_grep(), desc = "Grep (root dir)" },
@@ -260,7 +268,7 @@ return {
 		"smoka7/multicursors.nvim",
 		event = "VeryLazy",
 		dependencies = {
-			"smoka7/hydra.nvim",
+			"nvimtools/hydra.nvim",
 		},
 		opts = {
 			normal_keys = {
