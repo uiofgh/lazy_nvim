@@ -31,6 +31,12 @@ map(
 	function() vim.fn.setreg("+", vim.fn.expand "%:t:r") end,
 	{ desc = "Copy filename without extension" }
 )
+map(
+	"n",
+	"<leader>cp",
+	function() vim.fn.setreg("+", vim.fn.expand "%:p") end,
+	{ desc = "Copy full file path" }
+)
 map("n", "gx", ":tabclose<CR>", { silent = true, desc = "Close tab" })
 map("n", "<leader>cl", "<cmd>Lazy<cr>", { silent = true, desc = "Lazy" })
 map("n", "*", [[m`:keepjumps normal! *``<CR>]], { noremap = true, silent = true }) -- word boundary search, no autojump
