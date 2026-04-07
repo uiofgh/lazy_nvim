@@ -26,6 +26,19 @@ return {
 		event = "VeryLazy",
 		opts = { map_cr = false },
 	},
+	{
+		"ray-x/lsp_signature.nvim",
+		event = "InsertEnter",
+		opts = {
+			bind = true,
+			handler_opts = {
+				border = "rounded",
+			},
+			floating_window_above_cur_line = false,
+		},
+		-- or use config
+		-- config = function(_, opts) require'lsp_signature'.setup({you options}) end
+	},
 
 	-- auto completion
 	{
@@ -42,7 +55,7 @@ return {
 			"hrsh7th/cmp-cmdline",
 			"dmitmel/cmp-cmdline-history",
 			"rcarriga/cmp-dap",
-			"hrsh7th/cmp-nvim-lsp-signature-help",
+			-- "hrsh7th/cmp-nvim-lsp-signature-help",
 			"L3MON4D3/LuaSnip",
 		},
 		opts = function()

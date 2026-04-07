@@ -139,7 +139,7 @@ buffer_cleaner()
 local FileWatcher = {
 	watchers = {},
 	config = {
-		ext_whitelist = { ".lua" },
+		ext_whitelist = { ".lua", ".pto", ".py" },
 		dir_blacklist = { ".svn", ".git", ".temp", ".cache", "node_modules" },
 		debounce_ms = 300,
 	},
@@ -218,9 +218,7 @@ local function sync_files(project_path, files, opts)
 
 		local args = {}
 		for _, opt in ipairs(cfg.options) do
-			if opt ~= "-R" and opt ~= "--relative" then
-				args[#args + 1] = opt
-			end
+			if opt ~= "-R" and opt ~= "--relative" then args[#args + 1] = opt end
 		end
 		if cfg[sshKey] then args[#args + 1] = cfg[sshKey] end
 		args[#args + 1] = "--files-from=" .. tmpfile
@@ -331,7 +329,7 @@ local function svn_sync_picker()
 		return
 	end
 
-	local output = vim.fn.systemlist("svn status")
+	local output = vim.fn.systemlist "svn status"
 	if vim.v.shell_error ~= 0 then
 		vim.notify("svn status failed:\n" .. table.concat(output, "\n"), vim.log.levels.ERROR, { title = "SvnSync" })
 		return
@@ -340,7 +338,7 @@ local function svn_sync_picker()
 	local entries = {}
 	for _, line in ipairs(output) do
 		-- svn status format: "X       path" where X is status char(s), then spaces, then path
-		local status, filepath = line:match("^(%S+)%s+(.+)$")
+		local status, filepath = line:match "^(%S+)%s+(.+)$"
 		if status and filepath and status ~= "D" then
 			entries[#entries + 1] = {
 				status = status,
@@ -444,9 +442,7 @@ vim.api.nvim_create_user_command("SyncCurrentFile", function()
 
 		local args = {}
 		for _, opt in ipairs(cfg.options) do
-			if opt ~= "-R" and opt ~= "--relative" then
-				args[#args + 1] = opt
-			end
+			if opt ~= "-R" and opt ~= "--relative" then args[#args + 1] = opt end
 		end
 		if cfg[sshKey] then args[#args + 1] = cfg[sshKey] end
 		args[#args + 1] = bufpath
@@ -482,4 +478,16 @@ vim.api.nvim_create_autocmd({ "VimEnter", "DirChanged" }, {
 		local path = vim.fn.getcwd()
 		if vim.uv.fs_stat(path .. "/.rsync.lua") then FileWatcher.start(path) end
 	end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+	callback = function(args)
+		local treesitter = require "nvim-treesitter"
+		local lang = vim.treesitter.language.get_lang(args.match)
+		if vim.list_contains(treesitter.get_available(), lang) then
+			if not vim.list_contains(treesitter.get_installed(), lang) then treesitter.install(lang):wait() end
+			vim.treesitter.start(args.buf)
+		end
+	end,
+	desc = "Enable nvim-treesitter and install parser if not installed",
 })
