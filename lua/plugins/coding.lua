@@ -34,7 +34,6 @@ return {
 			handler_opts = {
 				border = "rounded",
 			},
-			floating_window_above_cur_line = false,
 		},
 		-- or use config
 		-- config = function(_, opts) require'lsp_signature'.setup({you options}) end

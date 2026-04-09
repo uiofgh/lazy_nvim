@@ -308,21 +308,15 @@ return {
 	},
 	-- show color under hex/rgb text
 	{
-		"NvChad/nvim-colorizer.lua",
+		"uiofgh/nvim-colorizer.lua",
 		event = "VeryLazy",
 		opts = {
-			filetypes = {
-				"*",
-				"!dapui*",
-				"!Telescope*",
-				lua = {
-					RGB = false,
-					RGBA = false,
-				},
-			},
-			user_default_options = {
-				names = false,
-				always_update = true,
+			"*",
+			"!dapui*",
+			"!Telescope*",
+			lua = {
+				RGB = false,
+				RGBA = false,
 			},
 		},
 	},
